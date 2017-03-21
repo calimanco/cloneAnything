@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+</head>
+
+<body>
+  <ul id='aim'>
+    <li class="fu">1</li>
+    <li class="fu">2</li>
+    <li class="fu">3</li>
+  </ul>
+  <input type="text" name="input" id="">
+  <script src="cloneAnything.js"></script>
+  <script type="text/javascript">
+    // 自定义的构造器，Child继承Person
+    function Person(name, age) {
+      this.name = name;
+      this.age = age;
+      this.sayAge = function() {
+        alert('I am ' + this.age + ' years old');
+      };
+    };
+    Person.prototype.sayName = function() {
+      alert('I am ' + this.name);
+    };
+
+    function Child(name, age, sex) {
+      Person.call(this, name, age);
+      this.sex = sex;
+    }
+    Child.prototype = Object.create(Person.prototype);
+    Child.prototype.constructor = Child;
+    Child.prototype.saySex = function() {
+      alert('I am ' + this.sex);
+    };
+
+    // 测试数据
+    data = {
+      reg1: /^[0-9]+.{0,1}[0-9]{0,2}$/,
+      reg2: new RegExp('^[0-9]+\.{0,1}[0-9]{0,2}$'),
+      number1: 123,
+      number2: new Number(123),
+      list1: [1, 2, 3],
+      list2: new Array(1, 2, 3),
+      boo1: false,
+      boo2: new Boolean(false),
+      str1: 'abc',
+      str2: new String('abc'),
+      fun: function(abc) {
+        return abc;
+      },
+      dom1: document.getElementById('aim'),
+      dom2: document.getElementsByTagName('li'),
+      dom3: document.getElementsByClassName('fu'),
+      dom4: document.getElementsByName('input'),
+      dom5: document.querySelector('li'),
+      dom6: document.querySelectorAll('li'),
+      child: new Child('lin', 23, 'man'),
+    }
+    var data2 = cloneAnything(data);
+    console.log(data);
+    console.log(data2);
+  </script>
+</body>

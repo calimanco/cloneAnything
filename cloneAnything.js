@@ -6,20 +6,17 @@ function cloneAnything(objectToBeCloned) {
   }
   var objectClone;
 
-  // 获取对象的构造函数
-  var Constructor = objectToBeCloned.constructor;
   // 对DOM对象特殊处理，列表就用数组把克隆结果装起来
-  var reg = /(HTMLUListElement|NodeList|HTMLCollection|HTMLLIElement)/;
-  if (reg.test(Constructor.toString())) {
+  if (objectToBeCloned instanceof Node || objectToBeCloned instanceof NodeList || objectToBeCloned instanceof HTMLCollection) {
     if (objectToBeCloned.length || objectToBeCloned.length === 0) {
-      var list = [];
-      for (var i = 0; i < objectToBeCloned.length; i++) {
-        list.push(objectToBeCloned[i].cloneNode(true));
-      }
-      return objectClone = list;
+      return objectClone = [].slice.call(objectToBeCloned);
     }
     return objectClone = objectToBeCloned.cloneNode(true);
   }
+
+  // 获取对象的构造函数
+  var Constructor = objectToBeCloned.constructor;
+
   // 对特殊构造器进行特殊处理。
   switch (Constructor) {
     case RegExp:
@@ -27,23 +24,26 @@ function cloneAnything(objectToBeCloned) {
     case Date:
       return objectClone = new Constructor(objectToBeCloned.getTime());
     case Number:
-      return objectClone = new Constructor(objectToBeCloned);
+      return objectClone = toLiteral(objectToBeCloned);
     case String:
-      return objectClone = new Constructor(objectToBeCloned);
+      return objectClone = toLiteral(objectToBeCloned);
     case Boolean:
-      return objectClone = new Constructor(emulateMessage(objectToBeCloned));
+      return objectClone = toLiteral(objectToBeCloned);
     case Function:
       return objectClone = objectToBeCloned;
     default:
       objectClone = new Constructor();
   }
 
-  function emulateMessage(vVal) {
-    return JSON.parse(JSON.stringify(vVal));
-  }
   // 递归遍历.
   for (var prop in objectToBeCloned) {
-    objectClone[prop] = cloneAnything(objectToBeCloned[prop]);
+    if (objectToBeCloned.hasOwnProperty(prop)) {
+      objectClone[prop] = cloneAnything(objectToBeCloned[prop]);
+    }
   }
   return objectClone;
+  // 构造函数生成的实例还原成字面量的方法
+  function toLiteral(vVal) {
+    return JSON.parse(JSON.stringify(vVal));
+  }
 }
